@@ -1,12 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { render } from 'react-dom';
 
-ReactDOM.render(
+import * as serviceWorker from './serviceWorker';
+import { Listings } from './sections/Listings'
+
+render(
   <React.StrictMode>
-    <App />
+    <Listings title="TinyHouse Listings" />
   </React.StrictMode>,
   document.getElementById('root')
 );
