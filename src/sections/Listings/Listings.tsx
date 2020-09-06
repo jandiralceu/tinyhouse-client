@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
 
-import { server } from "../../lib/api";
-import { ListingsData, DeleteListingData, DeleteListingVariables } from './types'
+import { server, useQuery } from "../../lib/api";
+import {
+  ListingsData,
+  DeleteListingData,
+  DeleteListingVariables,
+} from "./types";
 
 const LISTINGS = `
   query Listings {
@@ -32,27 +36,41 @@ interface ListingProps {
 }
 
 export const Listings: React.FC<ListingProps> = ({ title }) => {
-  const fetchListings = async () => {
-   const { data } = await server.fetch<ListingsData>({ query: LISTINGS })
+  const { data, loading, error, refetch } = useQuery<ListingsData>(LISTINGS);
 
-   console.log(data)
+  const deleteListing = async (id: string) => {
+    await server.fetch<DeleteListingData, DeleteListingVariables>({
+      query: DELETE_LISTING,
+      variables: { id },
+    });
+
+    refetch()
   };
 
-  const deleteListing = async () => {
-    const { data } = await server.fetch<DeleteListingData, DeleteListingVariables>({
-        query: DELETE_LISTING,
-        variables: { id: "5f508415fb17e358ec947a47" }
-    })
+  const listingList = useCallback(
+    () => (
+      <ul>
+        {data?.listings?.map((listing) => (
+          <li key={listing.id}>
+            {listing.title}
 
-    console.log(data)
-  }
+            <button onClick={() => deleteListing(listing.id)}>Remover</button>
+          </li>
+        ))}
+      </ul>
+    ),
+    [data]
+  );
+
+  if (loading) return <h2>Loading...</h2>
+
+  if (error) return <h2>Sorry! Our intern made something yesterday!</h2>
 
   return (
     <div>
       <h2>{title}</h2>
 
-      <button onClick={fetchListings}>Query Listing</button>
-      <button onClick={deleteListing}>Delete a  Listing</button>
+      <ul>{listingList()}</ul>
     </div>
   );
 };
