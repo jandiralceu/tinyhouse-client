@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { server, useQuery } from "../../lib/api";
+import { useQuery, useMutation } from "../../lib/api";
 import {
   ListingsData,
   DeleteListingData,
@@ -37,14 +37,15 @@ interface ListingProps {
 
 export const Listings: React.FC<ListingProps> = ({ title }) => {
   const { data, loading, error, refetch } = useQuery<ListingsData>(LISTINGS);
+  const [
+    deleteListing,
+    { loading: loadingOnRemove, error: errorOnRemove },
+  ] = useMutation<DeleteListingData, DeleteListingVariables>(DELETE_LISTING);
 
-  const deleteListing = async (id: string) => {
-    await server.fetch<DeleteListingData, DeleteListingVariables>({
-      query: DELETE_LISTING,
-      variables: { id },
-    });
+  const deleteListingHandler = async (id: string) => {
+    await deleteListing({ id });
 
-    refetch()
+    refetch();
   };
 
   const listingList = useCallback(
@@ -54,7 +55,9 @@ export const Listings: React.FC<ListingProps> = ({ title }) => {
           <li key={listing.id}>
             {listing.title}
 
-            <button onClick={() => deleteListing(listing.id)}>Remover</button>
+            <button onClick={() => deleteListingHandler(listing.id)}>
+              Remover
+            </button>
           </li>
         ))}
       </ul>
@@ -62,15 +65,18 @@ export const Listings: React.FC<ListingProps> = ({ title }) => {
     [data]
   );
 
-  if (loading) return <h2>Loading...</h2>
+  if (loading) return <h2>Loading...</h2>;
 
-  if (error) return <h2>Sorry! Our intern made something yesterday!</h2>
+  if (error) return <h2>Sorry! Our intern made something yesterday!</h2>;
 
   return (
     <div>
       <h2>{title}</h2>
 
       <ul>{listingList()}</ul>
+
+      {loadingOnRemove ? <h3>Removing listing...</h3> : null}
+      {errorOnRemove ? <h3>Uh oh! Something went wrong with deleting :(. Please try again soon.</h3> : null}
     </div>
   );
 };
