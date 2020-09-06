@@ -16,6 +16,7 @@
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "typescript": "~3.8.3"
   },
@@ -44,9 +45,11 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.5.0",
+    "@types/react-router-dom": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
-    "@typescript-eslint/typescript-estree": "^2.23.0"
+    "@typescript-eslint/typescript-estree": "^2.23.0",
+    "git-commit-msg-linter": "^2.6.0"
   },
   "proxy": "http://localhost:9000"
 }
