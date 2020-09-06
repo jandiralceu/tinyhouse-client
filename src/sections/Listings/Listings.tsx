@@ -1,13 +1,11 @@
 import React, { useCallback } from "react";
+import { gql } from "apollo-boost";
+import { useQuery, useMutation } from "react-apollo";
 
-import { useQuery, useMutation } from "../../lib/api";
-import {
-  ListingsData,
-  DeleteListingData,
-  DeleteListingVariables,
-} from "./types";
+import { Listings as ListingsData} from './__generated__/Listings'
+import { DeleteListing as DeleteListingData, DeleteListingVariables } from './__generated__/DeleteListing'
 
-const LISTINGS = `
+const LISTINGS = gql`
   query Listings {
     listings {
       id
@@ -23,7 +21,7 @@ const LISTINGS = `
   }
 `;
 
-const DELETE_LISTING = `
+const DELETE_LISTING = gql`
   mutation DeleteListing($id: ID!) {
     deleteListing(id: $id) {
       id
@@ -37,19 +35,20 @@ interface ListingProps {
 
 export const Listings: React.FC<ListingProps> = ({ title }) => {
   const { data, loading, error, refetch } = useQuery<ListingsData>(LISTINGS);
+  
   const [
     deleteListing,
     { loading: loadingOnRemove, error: errorOnRemove },
   ] = useMutation<DeleteListingData, DeleteListingVariables>(DELETE_LISTING);
 
-  const deleteListingHandler = async (id: string) => {
-    await deleteListing({ id });
+  const listingList = useCallback(() => {
+    const deleteListingHandler = async (id: string) => {
+      await deleteListing({ variables: { id } });
 
-    refetch();
-  };
+      refetch();
+    };
 
-  const listingList = useCallback(
-    () => (
+    return (
       <ul>
         {data?.listings?.map((listing) => (
           <li key={listing.id}>
@@ -61,9 +60,8 @@ export const Listings: React.FC<ListingProps> = ({ title }) => {
           </li>
         ))}
       </ul>
-    ),
-    [data]
-  );
+    );
+  }, [data, refetch, deleteListing]);
 
   if (loading) return <h2>Loading...</h2>;
 
@@ -76,7 +74,11 @@ export const Listings: React.FC<ListingProps> = ({ title }) => {
       <ul>{listingList()}</ul>
 
       {loadingOnRemove ? <h3>Removing listing...</h3> : null}
-      {errorOnRemove ? <h3>Uh oh! Something went wrong with deleting :(. Please try again soon.</h3> : null}
+      {errorOnRemove ? (
+        <h3>
+          Uh oh! Something went wrong with deleting. Please try again soon.
+        </h3>
+      ) : null}
     </div>
   );
 };
