@@ -1,16 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-import ApolloClient from 'apollo-boost'
-import { ApolloProvider } from 'react-apollo'
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 import { Layout } from 'antd'
 
 import "./styles/index.css"
+import { Viewer } from './lib/types'
 import { Listings, Listing, Home, Host, User, LogIn, NotFound } from './sections'
 
-const client = new ApolloClient({ uri: '/api' })
+const client = new ApolloClient({ uri: '/api', cache: new InMemoryCache() })
+
+const initialViewer: Viewer = {
+  id: null,
+  token: null,
+  avatar: null,
+  hasWallet: null,
+  didRequest: false
+}
 
 const App = () => {
+  const [viewer, setViewer] = useState<Viewer>(initialViewer)
+
+  console.log(viewer)
+  
   return (
     <Router>
       <Layout id="app">
@@ -19,7 +31,7 @@ const App = () => {
           <Route path="/host" component={Host} />
           <Route path="/listings/:location?" component={Listings} />
           <Route path="/listing/:id" component={Listing} />
-          <Route path="/login" component={LogIn} />
+          <Route path="/login" render={(props) => <LogIn {...props} setViewer={setViewer} />} />
           <Route path="/user/:id" component={User} />
           <Route component={NotFound} />
         </Switch>
