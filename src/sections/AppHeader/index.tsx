@@ -5,7 +5,7 @@ import { Layout } from "antd";
 import { MenuItems } from "../../lib/components";
 import { Viewer } from "../../lib/types";
 
-import tinyHouseLogo from "./assets/tinyhouse-logo.png";
+import tinyHouseLogo from "./../../assets/images/tinyhouse-logo.png";
 
 interface AppHeaderProps {
   viewer: Viewer;
