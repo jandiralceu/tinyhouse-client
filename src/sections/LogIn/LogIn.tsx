@@ -21,8 +21,9 @@ export const LogIn: React.FC<LogInProps> = ({ setViewer }) => {
   const client = useApolloClient();
   const [logIn, { data: logInData, loading: logInLoading, error: logInError}] = useMutation<LogInData, LogInVariables>(LOG_IN, {
     onCompleted: data => {
-      if(data?.logIn) {
+      if(data?.logIn.token) {
         setViewer(data.logIn)
+        sessionStorage.setItem("token", data.logIn.token)
         displaySuccessNotification("You've successfully logged in!")
       }
     }

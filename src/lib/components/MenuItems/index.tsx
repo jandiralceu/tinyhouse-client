@@ -19,6 +19,7 @@ export const MenuItems: React.FC<MenuItemsProps> = ({ viewer, setViewer }) => {
     onCompleted: (data) => {
       if (data?.logOut) {
         setViewer(data.logOut);
+        sessionStorage.removeItem("token");
         displaySuccessNotification("You've successfully logged out!");
       }
     },
